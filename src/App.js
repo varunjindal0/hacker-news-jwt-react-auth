@@ -1,19 +1,13 @@
 
-// https://hptechblogs.com/using-json-web-token-react/
-
 import React, { Component } from 'react';
 import upvote from './upvote.svg';
 import './App.css';
 
-// import {
-//   BrowserRouter as Router,
-//   Route
-// } from 'react-router-dom'
 
 import InfiniteScroll from 'react-infinite-scroller';
 
 import AuthService from './components/AuthService';
-import withAuth from './components/withAuth';
+
 const Auth = new AuthService();
 
 class Score extends Component{
@@ -29,7 +23,11 @@ class Score extends Component{
     
   }
   submitVote=(weight)=>{
-    console.log(Auth.getProfile().user_db_id);
+    if(!Auth.loggedIn()){
+      console.log("You are not loggedIn----- First do that!!")
+      this.props.history.push('/login')
+    } else {
+      console.log(Auth.getProfile().user_db_id);
     let userJson = Auth.getProfile();
     let voteWeight = weight;
     const headers = {
@@ -46,29 +44,14 @@ class Score extends Component{
       user_db_id: userJson.user_db_id
     })
     })
+    }
+    
   }
-  // unVoteClicked=()=>{
-  //   console.log("Unvoted Successfully")
-  //   let voteWeight = '-1';
-  //   const headers = {
-  //             'Accept': 'application/json',
-  //             'Content-Type': 'application/json'
-  //         }
-  //   this.setState({score: this.state.score+parseInt(voteWeight), votedAlready: false})
-  //   fetch('http://localhost:8080/upvote', {
-  //   method: 'POST',
-  //   headers,
-  //   body: JSON.stringify({
-  //     postId: this.props.entry.id,
-  //     ourScore: voteWeight,
-  //   })
-  //   })
-  // }
   render(){
     let upVoteWeight = '50';
     let downVoteWeight = '-50';
     return (
-      <div>{!this.state.votedAlready?<img src={upvote} onClick={()=>{this.submitVote(upVoteWeight)}} alt="upvote"/>: null}{" Points: "+this.state.score + " "}{this.state.votedAlready?<u onClick={()=>{this.submitVote(downVoteWeight)}}>unvote</u>: null}</div>
+      <div>{!this.state.votedAlready||!this.props.isLoggedIn?<img src={upvote} onClick={()=>{this.submitVote(upVoteWeight)}} alt="upvote"/>: null}{" Points: "+this.state.score + " "}{this.state.votedAlready && this.props.isLoggedIn?<u onClick={()=>{this.submitVote(downVoteWeight)}}>unvote</u>: null}</div>
     )
   }
 }
@@ -77,7 +60,7 @@ function NewsEntry(props){
   return (
     <div className='NewsEntry' >
       <a href={props.entry.url} target="_blank"> {props.entry.title} </a>
-      <Score likedPostIdsByLoggedInUser={props.likedPostIdsByLoggedInUser} entry={props.entry}/>
+      <Score isLoggedIn={props.isLoggedIn} history={props.history} likedPostIdsByLoggedInUser={props.likedPostIdsByLoggedInUser} entry={props.entry}/>
     </div>
   )
 }
@@ -85,7 +68,7 @@ function NewsEntry(props){
 class App extends Component {
   constructor(props){
     super(props);
-    this.state = {topStories: [], News: []}
+    this.state = {topStories: [], News: [], isLoggedIn: Auth.loggedIn()}
     this.index = 0;
     this.noOfElementsInOneGo = 20;
     this.loadMore= true;
@@ -96,17 +79,16 @@ class App extends Component {
     this.fetchTopStories()
     // this.fetchScoresOfPosts();
     console.log("*******************************************************")
-    fetch('http://localhost:8080/'+Auth.getProfile().user_db_id+'/voted')
-    .then(postIds=>postIds.json())
-    .then(jsonResponse=>{
-      console.log(jsonResponse);
-      this.likedPostIdsByLoggedInUser = jsonResponse;
-    })
+    if(Auth.loggedIn()){
+      fetch('http://localhost:8080/'+Auth.getProfile().user_db_id+'/voted')
+      .then(postIds=>postIds.json())
+      .then(jsonResponse=>{
+        console.log(jsonResponse);
+        this.likedPostIdsByLoggedInUser = jsonResponse;
+      })
+    }
+    
   }
-
-  // fetchScoresOfPosts=()=>{
-
-  // }
 
   renderPosts(newArray){
     console.log("I am in the renderPosts() function!");
@@ -152,16 +134,6 @@ class App extends Component {
         
 
        // **********************************************************************
-
-
-        // if(this.state.News.length>0){
-        //   let arr = this.state.News.concat(jsonResponses)
-        //   console.log("---------------------------"+ arr.length )
-        //   console.log(arr)
-        //   this.setState({News: arr});
-        //   } else {
-        //     this.setState({News: jsonResponses})
-        //    }
       })
     })
   }
@@ -196,30 +168,25 @@ class App extends Component {
     }
     
   }
-  // onloginClick=()=>{
-  //   console.log("Login click was pressed!!")
-  //   this.props.history.replace('/login');
-  // }
 
   onlogoutClick=()=>{
         Auth.logout()
-        this.props.history.replace('/login');
+        // this.props.history.replace('/login');
+        this.setState({isLoggedIn: false});
      }
-
+   onloginClick=()=>{
+      console.log("Login Area was clicked!!")
+      this.props.history.push('/login');
+    }
   render() {
     console.log('I am in render()-APP')
-    // if(!this.state.News.length){
-    //   return (
-    //     <div>loading...</div>
-    //   )
-    // } else {
+    if(this.state.isLoggedIn){
+      console.log('I am in render()-APP'+ Auth.getProfile())
+    }
       return (
-        <div className="container">
+        <div className='container'>
+          {this.state.isLoggedIn?<div className='LoginArea'><span>{"Hi "+ Auth.getProfile().username.charAt(0).toUpperCase()+Auth.getProfile().username.slice(1)}</span><button onClick={this.onlogoutClick}>Logout!!</button></div>:<div className='LoginArea'><span> Please Login to upVote----></span><button onClick={this.onloginClick}>Login!!</button></div>}
         
-        <div className='LoginArea' >
-          <button onClick={this.onlogoutClick}>Logout!!</button>
-        </div>  
-          
           <ol className='ListItems' >
           <InfiniteScroll
               pageStart={0}
@@ -234,7 +201,7 @@ class App extends Component {
                   return (
                     <li key={elem.id}>
                       {/* <a href={elem.url}>{elem.title}</a> Score: {elem.score} */}
-                      <NewsEntry likedPostIdsByLoggedInUser={this.likedPostIdsByLoggedInUser} entry={elem} />
+                      <NewsEntry isLoggedIn={this.state.isLoggedIn} history={this.props.history} likedPostIdsByLoggedInUser={this.likedPostIdsByLoggedInUser} entry={elem} />
                     </li> 
                   
                   )
@@ -249,30 +216,5 @@ class App extends Component {
   }
 }
 
-// class Main extends Component{
-//   constructor(props){
-//     super(props);
-//     this.state={view: 'App'}
-//   }
-//   onloginClick=()=>{
-//     console.log("Login Area was clicked!!")
-//     this.setState({view: 'login'})
-//   }
-//   render(){
-//     // var onloginclick = this.onloginClick;
-//     return(
-//       <Router>
-//         <div>
-//         {/* {
-//           this.state.view==='App'?<Route exact path="/" render={()=><App onloginClick={this.onloginClick} />}/>: <Route path="/login" component={Login}/>
-//         } */}
-//           <Route exact path="/" render={()=><App onloginClick={this.onloginClick} />}/>
-//           <Route exact path="/login" component={Login}/>
-//         </div>
-//       </Router>
-//     )
-//   }
-  
-// }
+export default App;
 
-export default withAuth(App);

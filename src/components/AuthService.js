@@ -46,6 +46,7 @@ export default class AuthService {
     loggedIn() {
         // Checks if there is a saved token and it's still valid
         const token = this.getToken() // GEtting token from localstorage
+        // when user won't be logged in token would be null in that case thats why using double !!
         return !!token && !this.isTokenExpired(token) // handwaiving here
     }
 

@@ -1,31 +1,4 @@
-.App {
-  text-align: center;
-}
 
-.App-logo {
-  animation: App-logo-spin infinite 20s linear;
-  height: 80px;
-}
-
-.App-header {
-  background-color: #222;
-  height: 150px;
-  padding: 20px;
-  color: white;
-}
-
-.App-title {
-  font-size: 1.5em;
-}
-
-.App-intro {
-  font-size: large;
-}
-
-@keyframes App-logo-spin {
-  from { transform: rotate(0deg); }
-  to { transform: rotate(360deg); }
-}
 
 /* //******************************************************************************************** */
 
@@ -36,12 +9,14 @@
   margin-left: 5%;
 }
 .LoginArea {
+  padding: 15px;
   display: flex;
-  justify-content: center;
+  justify-content: space-between;
   font-size: 23px;
+  color: white;
   padding-top: 5px;
   padding-bottom: 5px;
-  background-color: forestgreen;
+  background-color: blue;
 }
 .ListItems {
   margin-top: 0px;
