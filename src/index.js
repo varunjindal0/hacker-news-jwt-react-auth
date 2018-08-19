@@ -1,6 +1,4 @@
 
-// https://hptechblogs.com/using-json-web-token-react/
-
 import React from 'react';
 import ReactDOM from 'react-dom';
 import './index.css';
