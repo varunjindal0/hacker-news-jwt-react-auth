@@ -1,14 +1,8 @@
 
-// https://hptechblogs.com/using-json-web-token-react/
-
 import React, { Component } from 'react';
 import upvote from './upvote.svg';
 import './App.css';
 
-// import {
-//   BrowserRouter as Router,
-//   Route
-// } from 'react-router-dom'
 
 import InfiniteScroll from 'react-infinite-scroller';
 
@@ -47,23 +41,6 @@ class Score extends Component{
     })
     })
   }
-  // unVoteClicked=()=>{
-  //   console.log("Unvoted Successfully")
-  //   let voteWeight = '-1';
-  //   const headers = {
-  //             'Accept': 'application/json',
-  //             'Content-Type': 'application/json'
-  //         }
-  //   this.setState({score: this.state.score+parseInt(voteWeight), votedAlready: false})
-  //   fetch('http://localhost:8080/upvote', {
-  //   method: 'POST',
-  //   headers,
-  //   body: JSON.stringify({
-  //     postId: this.props.entry.id,
-  //     ourScore: voteWeight,
-  //   })
-  //   })
-  // }
   render(){
     let upVoteWeight = '50';
     let downVoteWeight = '-50';
@@ -94,7 +71,6 @@ class App extends Component {
 
   componentDidMount() {
     this.fetchTopStories()
-    // this.fetchScoresOfPosts();
     console.log("*******************************************************")
     fetch('http://localhost:8080/'+Auth.getProfile().user_db_id+'/voted')
     .then(postIds=>postIds.json())
@@ -103,10 +79,6 @@ class App extends Component {
       this.likedPostIdsByLoggedInUser = jsonResponse;
     })
   }
-
-  // fetchScoresOfPosts=()=>{
-
-  // }
 
   renderPosts(newArray){
     console.log("I am in the renderPosts() function!");
@@ -153,15 +125,6 @@ class App extends Component {
 
        // **********************************************************************
 
-
-        // if(this.state.News.length>0){
-        //   let arr = this.state.News.concat(jsonResponses)
-        //   console.log("---------------------------"+ arr.length )
-        //   console.log(arr)
-        //   this.setState({News: arr});
-        //   } else {
-        //     this.setState({News: jsonResponses})
-        //    }
       })
     })
   }
@@ -196,10 +159,6 @@ class App extends Component {
     }
     
   }
-  // onloginClick=()=>{
-  //   console.log("Login click was pressed!!")
-  //   this.props.history.replace('/login');
-  // }
 
   onlogoutClick=()=>{
         Auth.logout()
