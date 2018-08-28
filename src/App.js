@@ -30,14 +30,14 @@ class Score extends Component{
       console.log(Auth.getProfile().user_db_id);
     let userJson = Auth.getProfile();
     let voteWeight = weight;
-    const headers = {
-              'Accept': 'application/json',
-              'Content-Type': 'application/json'
-          }
+    // const headers = {
+    //           'Accept': 'application/json',
+    //           'Content-Type': 'application/json'
+    //       }
     this.setState({score: parseInt(this.state.score, 10)+parseInt(voteWeight, 10), votedAlready: !this.state.votedAlready})
-    fetch('http://localhost:8080/upvote', {
+    Auth.fetch('http://localhost:8080/upvote', {
     method: 'POST',
-    headers,
+    // headers,
     body: JSON.stringify({
       postId: this.props.entry.id,
       ourScore: voteWeight,
@@ -80,8 +80,8 @@ class App extends Component {
     // this.fetchScoresOfPosts();
     console.log("*******************************************************")
     if(Auth.loggedIn()){
-      fetch('http://localhost:8080/'+Auth.getProfile().user_db_id+'/voted')
-      .then(postIds=>postIds.json())
+       Auth.fetch('http://localhost:8080/'+Auth.getProfile().user_db_id+'/voted')
+      //  .then(postIds=>postIds.json())
       .then(jsonResponse=>{
         console.log(jsonResponse);
         this.likedPostIdsByLoggedInUser = jsonResponse;
